@@ -1,0 +1,6 @@
+db/
+demo_batch/
+incremental_db/
+output_files/
+pll_sim/
+*.bak

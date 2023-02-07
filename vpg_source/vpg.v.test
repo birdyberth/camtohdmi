@@ -1,0 +1,87 @@
+// --------------------------------------------------------------------
+// Copyright (c) 2007 by Terasic Technologies Inc. 
+// --------------------------------------------------------------------
+//
+// Permission:
+//
+//   Terasic grants permission to use and modify this code for use
+//   in synthesis for all Terasic Development Boards and Altera Development 
+//   Kits made by Terasic.  Other use of this code, including the selling 
+//   ,duplication, or modification of any portion is strictly prohibited.
+//
+// Disclaimer:
+//
+//   This VHDL/Verilog or C/C++ source code is intended as a design reference
+//   which illustrates how these types of functions can be implemented.
+//   It is the user's responsibility to verify their design for
+//   consistency and functionality through the use of formal
+//   verification methods.  Terasic provides no warranty regarding the use 
+//   or functionality of this code.
+//
+// --------------------------------------------------------------------
+//           
+//                     Terasic Technologies Inc
+//                     356 Fu-Shin E. Rd Sec. 1. JhuBei City,
+//                     HsinChu County, Taiwan
+//                     302
+//
+//                     web: http://www.terasic.com/
+//                     email: support@terasic.com
+//
+// --------------------------------------------------------------------
+
+`include "vpg.h"
+
+module vpg(
+	clk_50,
+	reset_n,
+	mode,
+	mode_change,
+	vpg_pclk,
+	vpg_de,
+	vpg_hs,
+	vpg_vs,
+	vpg_r,
+	vpg_g,
+	vpg_b
+);
+
+input					clk_50;
+input					reset_n;
+input		[3:0]		mode;
+input					mode_change;
+output				vpg_pclk;
+output				vpg_de;
+output				vpg_hs;
+output				vpg_vs;
+output	[7:0]		vpg_r;
+output	[7:0]		vpg_g;
+output	[7:0]		vpg_b;
+
+assign vpg_pclk = clk_50;
+
+assign vpg_r = 200;
+assign vpg_g = 0;
+assign vpg_b = 0;
+
+reg [11:0] hcounter = 0;
+reg [11:0] vcounter = 0;
+always @(posedge clk_50)
+begin
+	if (vcounter == 1920)
+		vcounter = 0;
+	else if (hcounter == 1080)
+		begin
+			hcounter = 0;
+			vcounter = vcounter + 1;
+		end
+	else
+		hcounter = hcounter + 1;
+end
+
+
+assign vpg_hs = (hcounter > 42) && (hcounter < 1000);
+assign vpg_vs = (vcounter > 42) && (vcounter < 1900);
+assign vpg_de = vpg_hs && vpg_vs;
+	
+endmodule
