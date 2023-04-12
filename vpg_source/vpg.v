@@ -35,6 +35,7 @@
 module vpg(
 	clk_50,
 	reset_n,
+	pixelrgb,
 	vpg_pclk,
 	vpg_de,
 	vpg_hs,
@@ -46,6 +47,7 @@ module vpg(
 
 input					clk_50;
 input					reset_n;
+input		[23:0]	pixelrgb;
 output				vpg_pclk;
 output				vpg_de;
 output				vpg_hs;
@@ -82,7 +84,8 @@ pll hdmi_pll (
 //=============== pattern generator according to vga timing
 vga_generator u_vga_generator (                                    
 	.clk(vpg_pclk),                
-	.reset_n(vpg_pclk_locked),                                                
+	.reset_n(vpg_pclk_locked),
+	.pixelrgb(pixelrgb),
 	.h_total(h_total),           
 	.h_sync(h_sync),           
 	.h_start(h_start),             

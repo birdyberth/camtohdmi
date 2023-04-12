@@ -51,8 +51,8 @@ module DE10_Nano_HDMI_TX(
       input              FPGA_CLK3_50,
 
       ///////// GPIO /////////
-      inout       [35:0] GPIO_0,
-      inout       [35:0] GPIO_1,
+      //inout       [35:0] GPIO_0,
+      //inout       [35:0] GPIO_1,
 
       ///////// HDMI /////////
       inout              HDMI_I2C_SCL,
@@ -67,6 +67,16 @@ module DE10_Nano_HDMI_TX(
       output             HDMI_TX_HS,
       input              HDMI_TX_INT,
       output             HDMI_TX_VS,
+		
+		//////// Camera //////////////
+		input 				D5M_PIXCLK_IN,
+		input					D5M_LVAL_IN,
+		input 				D5M_FVAL_IN,
+		input		[11:0]	D5M_Di_IN,
+		output				D5M_XCLKIN_OUT,
+		inout					D5M_SDA_OUT,
+		inout					D5M_SCL_OUT,
+		output				D5M_RESET_n_OUT,
 
 `ifdef ENABLE_HPS
       ///////// HPS /////////
@@ -136,13 +146,8 @@ module DE10_Nano_HDMI_TX(
 //  REG/WIRE declarations
 //=======================================================
 wire				reset_n;
-wire 				enable_vpg;
-
-//Video Pattern Generator
-wire	[3:0]		vpg_disp_mode;
-wire				vpg_pclk;
-wire				vpg_de, vpg_hs, vpg_vs;
-wire	[23:0]	vpg_data;
+wire [23:0]		pixelrgb;
+wire 				test;
 
 //=======================================================
 //  Structural coding
@@ -155,6 +160,7 @@ assign reset_n = KEY[0];
 vpg u_vpg (
 	.clk_50(FPGA_CLK1_50),
 	.reset_n(reset_n),
+	.pixelrgb(pixelrgb),
 	.vpg_pclk(HDMI_TX_CLK),
 	.vpg_de(HDMI_TX_DE),
 	.vpg_hs(HDMI_TX_HS),
@@ -169,10 +175,23 @@ I2C_HDMI_Config u_I2C_HDMI_Config (
 	.iRST_N(reset_n),
 	.I2C_SCLK(HDMI_I2C_SCL),
 	.I2C_SDAT(HDMI_I2C_SDA),
-	.HDMI_TX_INT(HDMI_TX_INT),
+	.HDMI_TX_INT(HDMI_TX_INT)
 	 );
 
+//Camera
+camera u_camera(
+	.CLOCK_50_IN(FPGA_CLK1_50),
+	.D5M_PIXCLK_IN(D5M_PIXCLK_IN),
+	.D5M_LVAL_IN(D5M_LVAL_IN),
+	.D5M_FVAL_IN(D5M_FVAL_IN),
+	.D5M_Di_IN(D5M_Di_IN),
+	.D5M_XCLKIN_OUT(D5M_XCLKIN_OUT),
+	.D5M_SDA_OUT(D5M_SDA_OUT),
+	.D5M_SCL_OUT(D5M_SCL_OUT),
+	.PIX_Di_OUT(pixelrgb),
+	.D5M_RESET_n_OUT(D5M_RESET_n_OUT)
+	);
 
-
+	assign LED[7:0] = pixelrgb[7:0];
 
 endmodule

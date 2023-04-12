@@ -32,7 +32,8 @@
 
 module vga_generator(                                    
   input						clk,                
-  input						reset_n,                                                
+  input						reset_n,
+  input 			[23:0]	pixelrgb,
   input			[11:0]	h_total,           
   input			[11:0]	h_sync,           
   input			[11:0]	h_start,             
@@ -68,6 +69,7 @@ wire				v_max, vs_end, vr_start, vr_end;
 wire				v_act_14, v_act_24, v_act_34;
 reg				boarder;
 reg	[3:0]		color_mode;
+
 
 //=======================================================
 //  Structural coding
@@ -194,6 +196,8 @@ begin
 		if (boarder)
 			{vga_r, vga_g, vga_b} <= {8'hFF,8'hFF,8'hFF};
 		else
+			{vga_r, vga_g, vga_b} <= {pixelrgb[7:0],pixelrgb[15:8],pixelrgb[23:16]};
+		/*
 			case (color_mode)
 				4'b0001	:	{vga_r, vga_g, vga_b}	<=	{pixel_x,8'h00,8'h00};
 				4'b0010	:	{vga_r, vga_g, vga_b}	<=	{8'h00,pixel_x,8'h00};
@@ -201,6 +205,7 @@ begin
 				4'b1000	:	{vga_r, vga_g, vga_b}	<=	{pixel_x,pixel_x,pixel_x};
 				default	:	{vga_r, vga_g, vga_b}	<=	{8'h00,8'h00,8'h00};
 			endcase
+		*/
 	end
 end	
 
